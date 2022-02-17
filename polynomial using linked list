@@ -1,0 +1,151 @@
+#include<stdio.h>
+#include<malloc.h>
+#include<stdlib.h>
+struct poly
+{ 
+    int coeff;
+    int exp1;
+    struct poly *next;
+};
+typedef struct poly poly;
+poly *addterm(poly *first,poly *new)
+{
+    poly *temp,*temp1;
+    if(first==NULL)
+    {
+        first=new;
+    }
+    else if(first->exp1<new->exp1)
+    {   
+        new->next=first;
+        first=new;
+    }
+    else
+    {   temp=first->next;
+        while((temp!=NULL) && (temp->exp1>new->exp1))
+        {
+            temp1=temp;
+            temp=temp->next;
+        }
+        if(temp==NULL)
+        {
+            temp1->next=new;
+        }
+        else if(temp->exp1==new->exp1)
+        {
+            temp->coeff=temp->coeff+new->coeff;
+        }
+        else
+        {
+           temp1->next=new;
+           new->next=temp;
+        }
+    }
+    return first;
+}
+void display(poly *first)
+{
+    poly *temp=first;
+    while(temp!=NULL)
+    {
+        printf("%dx^%d+",temp->coeff,temp->exp1);
+        temp=temp->next;
+    }
+
+}
+
+poly *create()
+{   poly *first=NULL;
+    poly *new;
+    int ch;
+    printf("press '-1' to stop or enter other poly");
+    scanf("%d",&ch);
+    while(ch!=-1)
+    {
+        printf("enter coeff and pow of poly ");
+        new=(poly *)(malloc(sizeof(poly)));
+        scanf("%d%d",&new->coeff,&new->exp1);
+        first=addterm(first,new);
+        printf("press '-1' to stop or enter other poly");
+        scanf("%d",&ch);
+    }
+    return first;
+}
+poly *add(poly *p1,poly *p2)
+{
+    poly *p3=NULL,*new;
+    while(p1!=NULL && p2!=NULL)
+    {  new=(poly*)(malloc(sizeof(poly)));
+       if(p1->exp1>p2->exp1)
+       {
+          new->coeff=p1->coeff;
+          new->exp1=p1->exp1;
+          p3=addterm(p3,new);
+          p1=p1->next;
+       }
+       else if(p2->exp1>p1->exp1)
+       {
+           new->coeff=p2->coeff;
+           new->exp1=p2->exp1;
+           p3=addterm(p3,new);
+           p2=p2->next;
+       }
+       else
+       {
+           new->coeff=p1->coeff+p2->coeff;
+           new->exp1=p1->exp1;
+           p3=addterm(p3,new);
+           p1=p1->next;
+           p2=p2->next;
+       }
+    }
+    if(p1==NULL)
+    {
+        while(p2!=NULL)
+        {
+            new=(poly*)(malloc(sizeof(poly)));
+            new->coeff=p2->coeff;
+            new->exp1=p2->exp1;
+            p3=addterm(p3,new);
+            p2=p2->next;
+        }
+    }
+    if(p2==NULL)
+    {
+        while(p1!=NULL)
+        {
+            new=(poly*)(malloc(sizeof(poly)));
+            new->coeff=p1->coeff;
+            new->exp1=p1->exp1;
+            p3=addterm(p3,new);
+            p1=p1->next;
+        }
+    }
+    return p3;
+    
+}
+void main()
+{
+    int ch,n;
+    poly *head;
+    poly *p1,*p2;
+    while(1)
+    {
+        printf("enter choice 1.create/n 2.display/n 3.add/n 4.mul/n 5.exit/n");
+        scanf("%d",&ch);
+        switch (ch)
+        {
+        case 1: head=create();
+                break;
+        case 2: display(head);
+                break;
+        case 3: p1=create();
+                p2=create();
+                head=add(p1,p2);
+                break;
+        
+        case 4: exit(1);
+        default: printf("enter between 1 to 4");
+        }
+    }
+}
